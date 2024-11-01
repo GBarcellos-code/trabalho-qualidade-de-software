@@ -18,15 +18,18 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '6.x'  # Use a versão do .NET do projeto
+          dotnet-version: '6.x'  # Coloque a versão do .NET do seu projeto aqui
+
+      - name: Install SonarScanner
+        run: dotnet tool install --global dotnet-sonarscanner
 
       - name: SonarCloud Begin
-        run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"GBarcellos-code_trabalho-qualidade-de-software" /o:"gbarcellos-code" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-      
+        run: dotnet-sonarscanner begin /k:"GBarcellos-code_trabalho-qualidade-de-software" /o:"gbarcellos-code" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+        env:
+          PATH: ${{ runner.tool_cache }}/dotnet/tools:$PATH # Inclui o SonarScanner no PATH
+
       - name: Build solution
-        run: dotnet build --configuration Release GBarcellos-code_trabalho-qualidade-de-software.sln # Inclua o caminho correto do .sln
+        run: dotnet build --configuration Release GBarcellos-code_trabalho-qualidade-de-software.sln # Coloque o caminho do seu arquivo .sln
 
       - name: SonarCloud End
-        run: .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-
+        run: dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
